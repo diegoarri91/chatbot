@@ -2,7 +2,7 @@ import logging
 import queue
 
 from langchain.chat_models import ChatOpenAI
-from langchain.schema.messages import HumanMessage, SystemMessage
+from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
 import pydub
 import streamlit as st
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
@@ -14,9 +14,39 @@ logger = logging.getLogger(__name__)
 
 st.title("💬 Chatbot")
 
+
+def record(webrtc_ctx):
+    print('just outside of while loop')
+    sound_chunk = pydub.AudioSegment.empty()
+    while True:
+        if webrtc_ctx.audio_receiver:
+            print("audio receiver set")
+            try:
+                audio_frames = webrtc_ctx.audio_receiver.get_frames(timeout=1)
+            except queue.Empty:
+                logger.warning("Queue is empty. Abort.")
+                break
+
+            for audio_frame in audio_frames:
+                sound = pydub.AudioSegment(
+                    data=audio_frame.to_ndarray().tobytes(),
+                    sample_width=audio_frame.format.bytes,
+                    frame_rate=audio_frame.sample_rate,
+                    channels=len(audio_frame.layout.channels),
+                )
+                sound_chunk += sound
+                print("inside web", len(sound_chunk))
+
+        else:
+            logger.warning("AudioReceiver is not set. Abort.")
+            break
+    return sound_chunk
+
+
 def get_ai_message(messages):
-    chat_llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY, temperature=0.7)
-    msg = chat_llm.invoke(messages)
+    # chat_llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY, temperature=0.7)
+    # msg = chat_llm.invoke(messages)
+    msg = AIMessage(content="gpt-3.5-turbo")
     return msg
 
 
@@ -48,31 +78,7 @@ with st.sidebar:
         rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
         media_stream_constraints={"video": False, "audio": True},
     )
-
-    print('just outside of while loop')
-    sound_chunk = pydub.AudioSegment.empty()
-    while True:
-        if webrtc_ctx.audio_receiver:
-            print("audio receiver set")
-            try:
-                audio_frames = webrtc_ctx.audio_receiver.get_frames(timeout=1)
-            except queue.Empty:
-                logger.warning("Queue is empty. Abort.")
-                break
-
-            for audio_frame in audio_frames:
-                sound = pydub.AudioSegment(
-                    data=audio_frame.to_ndarray().tobytes(),
-                    sample_width=audio_frame.format.bytes,
-                    frame_rate=audio_frame.sample_rate,
-                    channels=len(audio_frame.layout.channels),
-                )
-                sound_chunk += sound
-                print("inside web", len(sound_chunk))
-
-        else:
-            logger.warning("AudioReceiver is not set. Abort.")
-            break
+    sound_chunk = record(webrtc_ctx)
 
     print("end of loop", len(sound_chunk))
 
