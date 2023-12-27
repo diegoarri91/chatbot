@@ -11,6 +11,11 @@ def get_ai_message(messages):
     return msg
 
 
+def initialize_conversation():
+    msg = get_ai_message([SystemMessage(content=SYSTEM_MSG)])
+    st.session_state.messages = [msg]
+
+
 def write_and_append_message(msg):
     st.chat_message(msg.type).write(msg.content)
     st.session_state.messages.append(msg)
@@ -21,19 +26,14 @@ def write_all_session_messages():
         st.chat_message(msg.type).write(msg.content)
 
 
-def initialize_conversation():
-    msg = get_ai_message([SystemMessage(content=SYSTEM_MSG)])
-    st.session_state.messages = [msg]
-
-
 st.title("💬 Chatbot")
 
-if "messages" in st.session_state:
-    write_all_session_messages()
-else:
+if "messages" not in st.session_state:
     initialize_conversation()
     write_all_session_messages()
 
+else:
+    write_all_session_messages()
 
 if prompt := st.chat_input():
     human_msg = HumanMessage(content=prompt)
