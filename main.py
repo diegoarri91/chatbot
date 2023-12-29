@@ -8,9 +8,11 @@ import openai
 import streamlit as st
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
 
-from config import OPENAI_API_KEY, SYSTEM_MSG
-
 st.title("💬 Chatbot")
+
+OPENAI_API_KEY = st.sidebar.text_input('OpenAI API Key', type='password')
+SYSTEM_MSG = "You are a helpful assistant."
+
 
 def get_ai_message(messages):
     chat_llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY, temperature=0.7)
@@ -33,6 +35,7 @@ def write_and_append_message(msg):
 def write_all_session_messages():
     for msg in st.session_state.messages:
         st.chat_message(msg.type).write(msg.content)
+
 
 if "messages" not in st.session_state:
     initialize_conversation()
