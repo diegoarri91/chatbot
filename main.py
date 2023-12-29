@@ -26,9 +26,7 @@ def initialize_conversation():
 
 
 def write_and_append_message(msg):
-    print("writing")
     st.chat_message(msg.type).write(msg.content)
-    print("done writing")
     st.session_state.messages.append(msg)
 
 
@@ -38,8 +36,11 @@ def write_all_session_messages():
 
 
 if "messages" not in st.session_state:
-    initialize_conversation()
-    write_all_session_messages()
+    if OPENAI_API_KEY.startswith('sk-'):
+        initialize_conversation()
+        write_all_session_messages()
+    else:
+        st.warning('Please enter your OpenAI API key!', icon='⚠')
 else:
     write_all_session_messages()
 
@@ -51,6 +52,7 @@ with st.sidebar:
     def audio_recorder() -> MediaRecorder:
         return MediaRecorder(audio_file_path, format="wav")
 
+    st.write("Record voice message")
     webrtc_ctx = webrtc_streamer(
         key="record",
         mode=WebRtcMode.SENDRECV,
@@ -82,5 +84,8 @@ if prompt:
     human_msg = HumanMessage(content=prompt)
     write_and_append_message(human_msg)
 
-    ai_msg = get_ai_message(st.session_state.messages + [SystemMessage(content=SYSTEM_MSG)])
-    write_and_append_message(ai_msg)
+    if OPENAI_API_KEY.startswith('sk-'):
+        ai_msg = get_ai_message(st.session_state.messages + [SystemMessage(content=SYSTEM_MSG)])
+        write_and_append_message(ai_msg)
+    else:
+        st.warning('Please enter your OpenAI API key!', icon='⚠')
