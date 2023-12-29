@@ -85,7 +85,7 @@ if prompt:
     write_and_append_message(human_msg)
 
     if OPENAI_API_KEY.startswith('sk-'):
-        ai_msg = get_ai_message(st.session_state.messages + [SystemMessage(content=SYSTEM_MSG)])
+        ai_msg = get_ai_message(st.session_state.messages)
         write_and_append_message(ai_msg)
     else:
         st.warning('Please enter your OpenAI API key!', icon='⚠')
