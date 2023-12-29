@@ -71,7 +71,8 @@ with st.sidebar:
         audio_prompt = openai.Audio.transcribe(
             "whisper-1",
             open(audio_file_path, "rb"),
-            api_key=OPENAI_API_KEY
+            api_key=OPENAI_API_KEY,
+            language="en"
         )["text"]
         os.remove(audio_file_path)
 
