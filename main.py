@@ -8,8 +8,12 @@ import openai
 import streamlit as st
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
 
+from utils import get_ice_servers
+
 st.title("💬 Chatbot")
 
+os.environ["TWILIO_ACCOUNT_SID"] = st.secrets["TWILIO_ACCOUNT_SID"]
+os.environ["TWILIO_AUTH_TOKEN"] = st.secrets["TWILIO_AUTH_TOKEN"]
 OPENAI_API_KEY = st.sidebar.text_input('OpenAI API Key', type='password')
 SYSTEM_MSG = "You are a helpful assistant."
 
@@ -56,7 +60,7 @@ with st.sidebar:
     webrtc_ctx = webrtc_streamer(
         key="record",
         mode=WebRtcMode.SENDRECV,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        rtc_configuration={"iceServers": get_ice_servers()},
         media_stream_constraints={
             "video": False,
             "audio": True,
