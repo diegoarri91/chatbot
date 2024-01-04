@@ -26,6 +26,9 @@ def get_ice_servers():
         )
         return [{"urls": ["stun:stun.l.google.com:19302"]}]
 
+    if len(account_sid) == 0 or len(auth_token) == 0:
+        return [{"urls": ["stun:stun.l.google.com:19302"]}]
+
     client = Client(account_sid, auth_token)
 
     token = client.tokens.create()

@@ -12,14 +12,11 @@ from utils import get_ice_servers
 
 st.title("💬 Chatbot")
 
+SYSTEM_MSG = "You are a helpful assistant."
 OPENAI_API_KEY = st.sidebar.text_input('OpenAI API Key', type='password')
-
 st.sidebar.write("[Twilio credentials](https://console.twilio.com/) for voice")
 os.environ["TWILIO_ACCOUNT_SID"] = st.sidebar.text_input('Twilio account SID', type='password')
 os.environ["TWILIO_AUTH_TOKEN"] = st.sidebar.text_input('Twilio auth token', type='password')
-
-SYSTEM_MSG = "You are a helpful assistant."
-
 
 def get_ai_message(messages):
     chat_llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY, temperature=0.7)
