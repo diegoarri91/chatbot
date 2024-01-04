@@ -12,9 +12,12 @@ from utils import get_ice_servers
 
 st.title("💬 Chatbot")
 
-os.environ["TWILIO_ACCOUNT_SID"] = st.secrets["TWILIO_ACCOUNT_SID"]
-os.environ["TWILIO_AUTH_TOKEN"] = st.secrets["TWILIO_AUTH_TOKEN"]
 OPENAI_API_KEY = st.sidebar.text_input('OpenAI API Key', type='password')
+
+st.sidebar.write("[Twilio credentials](https://console.twilio.com/) for voice")
+os.environ["TWILIO_ACCOUNT_SID"] = st.sidebar.text_input('Twilio account SID', type='password')
+os.environ["TWILIO_AUTH_TOKEN"] = st.sidebar.text_input('Twilio auth token', type='password')
+
 SYSTEM_MSG = "You are a helpful assistant."
 
 
