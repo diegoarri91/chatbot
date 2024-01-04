@@ -3,3 +3,4 @@ langchain>=0.0.329,<1
 openai>=0.28.1,<1
 streamlit>=1.29.0,<2
 streamlit-webrtc>=0.45.0<1
+twilio>=8.1.0<9
